@@ -101,7 +101,7 @@ public final class LifecycleModule extends Module {
     adherence(person, time);
     diabeticVitalSigns(person, time);
     calculateFallRisk(person, time);
-    death(person, time);
+    //death(person, time);
 
     // java modules will never "finish"
     return false;

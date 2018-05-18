@@ -31,21 +31,21 @@ public final class CardiovascularDiseaseModule extends Module {
     // ruby "rules" are converted to static functions here
     // since this is intended to only be temporary
     // until we can convert this module to GMF
-
-    calculateCardioRisk(person, time);
-    onsetCoronaryHeartDisease(person, time);
-    coronaryHeartDiseaseProgression(person, time);
-    noCoronaryHeartDisease(person, time);
-    calculateAtrialFibrillationRisk(person, time);
-    getAtrialFibrillation(person, time);
-    calculateStrokeRisk(person, time);
-    getStroke(person, time);
-    heartHealthyLifestyle(person, time);
-    chdTreatment(person, time);
-    atrialFibrillationTreatment(person, time);
-
-    // java modules will never "finish"
-    return false;
+    return true;
+//    calculateCardioRisk(person, time);
+//    onsetCoronaryHeartDisease(person, time);
+//    coronaryHeartDiseaseProgression(person, time);
+//    noCoronaryHeartDisease(person, time);
+//    calculateAtrialFibrillationRisk(person, time);
+//    getAtrialFibrillation(person, time);
+//    calculateStrokeRisk(person, time);
+//    getStroke(person, time);
+//    heartHealthyLifestyle(person, time);
+//    chdTreatment(person, time);
+//    atrialFibrillationTreatment(person, time);
+//
+//    // java modules will never "finish"
+//    return false;
   }
 
   //////////////
