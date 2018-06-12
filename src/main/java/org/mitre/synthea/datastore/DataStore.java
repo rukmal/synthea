@@ -64,6 +64,8 @@ public class DataStore {
               + "(id varchar, name varchar, date_of_birth bigint, date_of_death bigint, "
               + "race varchar, gender varchar, socioeconomic_status varchar)")
           .execute();
+      connection.prepareStatement("CREATE INDEX IF NOT EXISTS PERSON_ID ON PERSON(ID);")
+          .execute();
       connection.prepareStatement("CREATE INDEX IF NOT EXISTS PERSON_RACE ON PERSON(RACE);")
           .execute();
       connection.prepareStatement("CREATE INDEX IF NOT EXISTS PERSON_GENDER ON PERSON(GENDER);")
@@ -102,8 +104,8 @@ public class DataStore {
       connection
           .prepareStatement(
               "CREATE TABLE IF NOT EXISTS CONDITION "
-              + "(person_id varchar, name varchar, type varchar, start bigint, stop bigint, "
-              + "code varchar, display varchar, system varchar)")
+              + "(person_id varchar, encounter_id varchar, name varchar, type varchar, "
+              + "start bigint, stop bigint, code varchar, display varchar, system varchar)")
           .execute();
       connection
           .prepareStatement(
@@ -113,8 +115,9 @@ public class DataStore {
       connection
           .prepareStatement(
               "CREATE TABLE IF NOT EXISTS MEDICATION "
-              + "(id varchar, person_id varchar, provider_id varchar, name varchar, type varchar, "
-              + "start bigint, stop bigint, code varchar, display varchar, system varchar)")
+              + "(id varchar, person_id varchar, provider_id varchar, encounter_id varchar, "
+              + "name varchar, type varchar, start bigint, stop bigint, "
+              + "code varchar, display varchar, system varchar)")
           .execute();
 
       connection
@@ -302,26 +305,28 @@ public class DataStore {
         stmt.execute();
 
         for (HealthRecord.Entry condition : encounter.conditions) {
-          // CREATE TABLE IF NOT EXISTS CONDITION (person_id varchar, name varchar, type varchar,
-          // start bigint, stop bigint, code varchar, display varchar, system varchar)
+          // CREATE TABLE IF NOT EXISTS CONDITION 
+          // (person_id varchar, encounter_id varchar, name varchar, type varchar,
+          //  start bigint, stop bigint, code varchar, display varchar, system varchar)
           stmt = connection.prepareStatement(
               "INSERT INTO CONDITION "
-              + "(person_id, name, type, start, stop, code, display, system) "
-              + "VALUES (?,?,?,?,?,?,?,?);");
+              + "(person_id, encounter_id, name, type, start, stop, code, display, system) "
+              + "VALUES (?,?,?,?,?,?,?,?,?);");
           stmt.setString(1, personID);
-          stmt.setString(2, condition.name);
-          stmt.setString(3, condition.type);
-          stmt.setLong(4, condition.start);
-          stmt.setLong(5, condition.stop);
+          stmt.setString(2, encounterID);
+          stmt.setString(3, condition.name);
+          stmt.setString(4, condition.type);
+          stmt.setLong(5, condition.start);
+          stmt.setLong(6, condition.stop);
           if (condition.codes.isEmpty()) {
-            stmt.setString(6, null);
             stmt.setString(7, null);
             stmt.setString(8, null);
+            stmt.setString(9, null);
           } else {
             Code code = condition.codes.get(0);
-            stmt.setString(6, code.code);
-            stmt.setString(7, code.display);
-            stmt.setString(8, code.system);
+            stmt.setString(7, code.code);
+            stmt.setString(8, code.display);
+            stmt.setString(9, code.system);
           }
           stmt.execute();
         }
@@ -453,29 +458,31 @@ public class DataStore {
 
         for (Medication medication : encounter.medications) {
           // CREATE TABLE IF NOT EXISTS MEDICATION (id varchar, person_id varchar, provider_id
-          // varchar, name varchar, type varchar, start bigint, stop bigint, code varchar, display
-          // varchar, system varchar)
+          // varchar, encounter_id varchar, name varchar, type varchar, start bigint, stop bigint, 
+          // code varchar, display varchar, system varchar)
           stmt = connection.prepareStatement(
               "INSERT INTO MEDICATION "
-              + "(id, person_id, provider_id, name, type, start, stop, code, display, system) "
-              + "VALUES (?,?,?,?,?,?,?,?,?,?);");
+              + "(id, person_id, provider_id, encounter_id, name, type, "
+              + "start, stop, code, display, system) "
+              + "VALUES (?,?,?,?,?,?,?,?,?,?,?);");
           String medicationID = UUID.randomUUID().toString();
           stmt.setString(1, medicationID);
           stmt.setString(2, personID);
           stmt.setString(3, providerID);
-          stmt.setString(4, medication.name);
-          stmt.setString(5, medication.type);
-          stmt.setLong(6, medication.start);
-          stmt.setLong(7, medication.stop);
+          stmt.setString(4, encounterID);
+          stmt.setString(5, medication.name);
+          stmt.setString(6, medication.type);
+          stmt.setLong(7, medication.start);
+          stmt.setLong(8, medication.stop);
           if (medication.codes.isEmpty()) {
-            stmt.setString(8, null);
             stmt.setString(9, null);
             stmt.setString(10, null);
+            stmt.setString(11, null);
           } else {
             Code code = medication.codes.get(0);
-            stmt.setString(8, code.code);
-            stmt.setString(9, code.display);
-            stmt.setString(10, code.system);
+            stmt.setString(9, code.code);
+            stmt.setString(10, code.display);
+            stmt.setString(11, code.system);
           }
           stmt.execute();
 
