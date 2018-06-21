@@ -1,0 +1,581 @@
+{
+  "name": "Cystic Fibrosis",
+  "remarks": [
+    "A blank module"
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "direct_transition": "Potential_Onset"
+    },
+    "Terminal": {
+      "type": "Terminal"
+    },
+    "Potential_Onset": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 1,
+        "unit": "weeks"
+      },
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Race",
+            "race": "White"
+          },
+          "distributions": [
+            {
+              "transition": "Cystic_Fibrosis",
+              "distribution": 0.0003333333
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Race",
+            "race": "Black"
+          },
+          "distributions": [
+            {
+              "transition": "Cystic_Fibrosis",
+              "distribution": 0.000066225
+            }
+          ]
+        },
+        {
+          "distributions": [
+            {
+              "transition": "Cystic_Fibrosis",
+              "distribution": 0.000028571
+            }
+          ],
+          "condition": {
+            "condition_type": "Race",
+            "race": "Asian"
+          }
+        },
+        {
+          "distributions": [],
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Cystic_Fibrosis": {
+      "type": "ConditionOnset",
+      "target_encounter": "Fibrosis_Screening",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 190905008,
+          "display": "Cystic Fibrosis"
+        }
+      ],
+      "complex_transition": [
+        {
+          "condition": {
+            "condition_type": "Gender",
+            "gender": "M"
+          },
+          "distributions": [
+            {
+              "transition": "Male_Infertility",
+              "distribution": 0.98
+            }
+          ]
+        },
+        {
+          "condition": {
+            "condition_type": "Gender",
+            "gender": "F"
+          },
+          "distributions": [
+            {
+              "transition": "Female_Infertility",
+              "distribution": 0.5
+            }
+          ]
+        },
+        {
+          "distributions": [],
+          "transition": "chronic_cough"
+        }
+      ]
+    },
+    "Age <1": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 1,
+        "unit": "months"
+      },
+      "direct_transition": "Set_Age_0"
+    },
+    "Age 1": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 1,
+        "unit": "years"
+      },
+      "direct_transition": "symptoms_dont_improve"
+    },
+    "Ages_2_15": {
+      "type": "Delay",
+      "range": {
+        "low": 2,
+        "high": 15,
+        "unit": "years"
+      },
+      "direct_transition": "symptoms_dont_improve"
+    },
+    "16_plus": {
+      "type": "Delay",
+      "range": {
+        "low": 16,
+        "high": 50,
+        "unit": "years"
+      },
+      "direct_transition": "symptoms_dont_improve"
+    },
+    "Fibrosis_Screening": {
+      "type": "Encounter",
+      "encounter_class": "inpatient",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 67799006,
+          "display": "Diagnosis of cystic fibrosis using sweat test and gene test"
+        }
+      ],
+      "direct_transition": "Sweat_Test"
+    },
+    "Sweat_Test": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 86964003,
+          "display": "Sweat Test"
+        }
+      ],
+      "duration": {
+        "low": 1,
+        "high": 2,
+        "unit": "hours"
+      },
+      "direct_transition": "Gene_mutation_test",
+      "remarks": ""
+    },
+    "Gene_mutation_test": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 444260001,
+          "display": "SNOMED Code"
+        }
+      ],
+      "duration": {
+        "low": 0.5,
+        "high": 1,
+        "unit": "hours"
+      },
+      "direct_transition": "End_Screening"
+    },
+    "": {
+      "type": "Simple",
+      "direct_transition": ""
+    },
+    "End_Screening": {
+      "type": "EncounterEnd",
+      "distributed_transition": [
+        {
+          "transition": "Prescribe_Mucus_Thinner",
+          "distribution": 0.95
+        },
+        {
+          "transition": "Set_Gene_Mutation",
+          "distribution": 0.05
+        }
+      ]
+    },
+    "Set_Age_0": {
+      "type": "SetAttribute",
+      "attribute": "age",
+      "value": 0,
+      "distributed_transition": [
+        {
+          "transition": "Neonatal_screening",
+          "distribution": 0.82
+        },
+        {
+          "transition": "Meconium Ileus",
+          "distribution": 0.18
+        }
+      ]
+    },
+    "Set_Gene_Mutation": {
+      "type": "SetAttribute",
+      "attribute": "G155D Mutation",
+      "direct_transition": "Prescribe_Ivacaftor",
+      "value": true
+    },
+    "chronic_cough": {
+      "type": "Symptom",
+      "symptom": "Chronic Cough",
+      "cause": "",
+      "direct_transition": "Salty_Skin",
+      "range": {
+        "low": 50,
+        "high": 100
+      }
+    },
+    "Meconium Ileus": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "",
+      "target_encounter": "Fibrosis_Screening",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 206523001,
+          "display": "SNOMED Code"
+        }
+      ],
+      "direct_transition": "Set_Meconium_Ileus"
+    },
+    "Set_Meconium_Ileus": {
+      "type": "SetAttribute",
+      "attribute": "meconium_ileus",
+      "direct_transition": "Neonatal_screening",
+      "value": true
+    },
+    "Enema": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 385186005,
+          "display": "SNOMED Code"
+        }
+      ],
+      "duration": {
+        "low": 1,
+        "high": 2,
+        "unit": "hours"
+      },
+      "direct_transition": "Meconium_Ileus_Resolved"
+    },
+    "Male_Infertility": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "",
+      "target_encounter": "Fibrosis_Screening",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": "1234",
+          "display": "SNOMED Code"
+        }
+      ],
+      "direct_transition": "chronic_cough"
+    },
+    "Female_Infertility": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "",
+      "target_encounter": "Fibrosis_Screening",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 707577004,
+          "display": "Female Infertility"
+        }
+      ],
+      "direct_transition": "chronic_cough"
+    },
+    "Neonatal_screening": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 60151004,
+          "display": "SNOMED Code"
+        }
+      ],
+      "duration": {
+        "low": 12,
+        "high": 24,
+        "unit": "hours"
+      },
+      "conditional_transition": [
+        {
+          "transition": "Enema",
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "Meconium_Ileus",
+            "operator": "==",
+            "value": true
+          }
+        },
+        {
+          "transition": "symptoms_dont_improve"
+        }
+      ]
+    },
+    "symptoms_dont_improve": {
+      "type": "Delay",
+      "direct_transition": "Fibrosis_Screening",
+      "range": {
+        "low": 2,
+        "high": 4,
+        "unit": "weeks"
+      }
+    },
+    "Meconium_Ileus_Resolved": {
+      "type": "ConditionEnd",
+      "direct_transition": "Fibrosis_Screening",
+      "condition_onset": "Meconium_Ileus"
+    },
+    "CF_CarePlan": {
+      "type": "CarePlanStart",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 710971000,
+          "display": "Airway Clearance"
+        },
+        {
+          "system": "SNOMED-CT",
+          "code": 56251003,
+          "display": "Nebulizer Therapy"
+        },
+        {
+          "system": "SNOMED-CT",
+          "code": 392020005,
+          "display": "PICC care"
+        }
+      ],
+      "direct_transition": "Life_With_Cystic_Fibrosis",
+      "reason": "Cystic Fibrosis"
+    },
+    "Pancreatin": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": 210856,
+          "display": "Pancreatin 4X 600 MG Oral Tablet"
+        }
+      ],
+      "direct_transition": "CF_CarePlan",
+      "reason": "Cystic_Fibrosis"
+    },
+    "Life_With_Cystic_Fibrosis": {
+      "type": "Delay",
+      "exact": {
+        "quantity": 13,
+        "unit": "weeks"
+      },
+      "direct_transition": "Year Counter"
+    },
+    "Getting_Diagnosed": {
+      "type": "Simple",
+      "distributed_transition": [
+        {
+          "transition": "Age <1",
+          "distribution": 0.657
+        },
+        {
+          "transition": "Age 1",
+          "distribution": 0.066
+        },
+        {
+          "transition": "Ages_2_15",
+          "distribution": 0.208
+        },
+        {
+          "transition": "16_plus",
+          "distribution": 0.068
+        }
+      ]
+    },
+    "Prescribe_Ivacaftor": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": 1655927,
+          "display": "Ivacaftor"
+        }
+      ],
+      "direct_transition": "Prescribe_Mucus_Thinner",
+      "reason": "Cystic Fibrosis"
+    },
+    "Prescribe_Mucus_Thinner": {
+      "type": "MedicationOrder",
+      "codes": [
+        {
+          "system": "RxNorm",
+          "code": 74704,
+          "display": "Mucus Thinner"
+        }
+      ],
+      "reason": "Cystic Fibrosis",
+      "distributed_transition": [
+        {
+          "transition": "Pancreatin",
+          "distribution": 0.9
+        },
+        {
+          "transition": "CF_CarePlan",
+          "distribution": 0.1
+        }
+      ]
+    },
+    "Salty_Skin": {
+      "type": "Symptom",
+      "symptom": "Salty_Skin",
+      "cause": "",
+      "exact": {
+        "quantity": 1
+      },
+      "direct_transition": "Getting_Diagnosed"
+    },
+    "Year Counter": {
+      "type": "Counter",
+      "attribute": "year",
+      "action": "increment",
+      "direct_transition": "Tracker"
+    },
+    "Tracker": {
+      "type": "Simple",
+      "conditional_transition": [
+        {
+          "transition": "setChest",
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "year",
+            "operator": "==",
+            "value": 8
+          }
+        },
+        {
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "year",
+            "operator": "==",
+            "value": 4
+          }
+        },
+        {
+          "transition": "Quarterly_Checkup"
+        }
+      ]
+    },
+    "setChest": {
+      "type": "SetAttribute",
+      "attribute": "check_chest",
+      "direct_transition": "setYear",
+      "value": true
+    },
+    "setYear": {
+      "type": "SetAttribute",
+      "attribute": "year",
+      "direct_transition": "Quarterly_Checkup",
+      "value": 0
+    },
+    "Quarterly_Checkup": {
+      "type": "Encounter",
+      "encounter_class": "ambulatory",
+      "reason": "",
+      "codes": [],
+      "wellness": true,
+      "conditional_transition": [
+        {
+          "transition": "Chest_XRay",
+          "condition": {
+            "condition_type": "Attribute",
+            "attribute": "check_chest",
+            "operator": "==",
+            "value": true
+          }
+        },
+        {
+          "transition": "Oropharyngeal_Culture"
+        }
+      ]
+    },
+    "Chest_XRay": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 399208008,
+          "display": "Chest X-ray"
+        }
+      ],
+      "duration": {
+        "low": 1,
+        "high": 2,
+        "unit": "hours"
+      },
+      "direct_transition": "setChestFalse"
+    },
+    "setChestFalse": {
+      "type": "SetAttribute",
+      "attribute": "check_chest",
+      "direct_transition": "setChestFalse",
+      "value": false
+    },
+    "new_state": {
+      "type": "Simple",
+      "direct_transition": "new_state"
+    },
+    "Oropharyngeal_Culture": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 104173009,
+          "display": "Sputum Culture"
+        }
+      ],
+      "duration": {
+        "low": 5,
+        "high": 15,
+        "unit": "minutes"
+      },
+      "direct_transition": "Spirometry"
+    },
+    "Spirometry": {
+      "type": "Procedure",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 127783003,
+          "display": "SNOMED Code"
+        }
+      ],
+      "duration": {
+        "low": 5,
+        "high": 15,
+        "unit": "minutes"
+      },
+      "distributed_transition": [
+        {
+          "transition": "Spirometry",
+          "distribution": 0.975
+        }
+      ]
+    },
+    "Develop_Diabetes": {
+      "type": "ConditionOnset",
+      "assign_to_attribute": "",
+      "target_encounter": "Quarterly_Checkup",
+      "codes": [
+        {
+          "system": "SNOMED-CT",
+          "code": 427089005,
+          "display": "Diabetes from Cystic Fibrosis"
+        }
+      ],
+      "direct_transition": "Develop_Diabetes"
+    }
+  }
+}
